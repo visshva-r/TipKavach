@@ -1,0 +1,36 @@
+=== PASTE FOR UNSTOP — SANGYAN HACKATHON ===
+
+PROJECT NAME: TipKavach — Scam & Tip Risk Checker
+
+TRACK: Track A — Digital Fraud & Scam Resilience
+
+--- Problem Statement ---
+First-time and Tier-2/3 retail investors in India receive high-pressure investment tips on WhatsApp and Telegram—guaranteed returns, VIP F&O groups, fake IPO allotments, and requests for UPI payment or OTP. Victims often realize fraud only after money is lost. They need a simple, trustworthy way to check a message before acting.
+
+--- Target User ---
+Praveen, 22, Tier-3 city graduate and gig worker, new to trading. He follows Telegram F&O tip channels and trades on borrowed capital. He needs a tool that works on a low-end phone, in Hindi or English, without sharing private data.
+
+--- Solution Overview ---
+TipKavach lets users paste (or load sample) WhatsApp/Telegram-style investment messages. An on-device rule engine scores scam red flags (guaranteed returns, urgency, personal UPI, remote-access apps, fake SEBI claims, OTP requests, etc.) and shows Low/Medium/High risk with clear uncertainty (“pattern check, not a final verdict”). It explains each warning in plain language, lists safe next steps (1930, cybercrime.gov.in, SCORES, verify on sebi.gov.in), and offers “Listen” via Web Speech (hi-IN / en-IN). No stock tips; no buy/sell advice; message never leaves the device.
+
+--- Technology ---
+- Single-page HTML/CSS/JavaScript (no backend, no API keys)
+- Weighted keyword/pattern rule engine (English, Hindi, Hinglish)
+- SEBI registration format checks (INA/INH/INZ — user directed to official verification)
+- Web Speech API for accessibility / low-literacy users
+- Privacy-by-design: zero server upload, works offline after load
+- Deploy: static hosting (Netlify Drop / GitHub Pages)
+
+--- Demo link ---
+[PASTE YOUR NETLIFY OR GITHUB PAGES URL HERE]
+
+--- Demo video ---
+[UPLOAD 60–90 sec: sample scam → High risk → Hindi toggle → Listen]
+
+--- Impact & Scalability ---
+India’s 16+ crore demat accounts and Telegram/WhatsApp tip culture make pre-payment scam checks a high-leverage public-good tool. TipKavach scales as a lightweight PWA on any phone, can add OCR (screenshots), regional languages (Bhashini), and community fraud patterns—without collecting OTPs or SMS. It aligns with SEBI/NSDL investor-protection goals and hackathon guardrails (non-commercial, no investment recommendations).
+
+--- Guardrails compliance ---
+Does NOT provide stock tips, price predictions, or broker promotion. Does NOT collect OTP/SMS. Communicates uncertainty. Investor-protection infrastructure only.
+
+=== END ===
