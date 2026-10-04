@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <meta name="description" content="TipKavach — check WhatsApp and Telegram investment tips for scam red flags. On-device, no data sent." />
+  <title>TipKavach — Investor Scam Check</title>
+  <style>
+    :root {
+      --bg: #0f1419;
+      --surface: #1a2332;
+      --text: #e8eef4;
+      --muted: #8b9cb3;
+      --accent: #3d9eff;
+      --low: #22c55e;
+      --med: #f59e0b;
+      --high: #ef4444;
+      --border: #2d3a4d;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      min-height: 100vh;
+    }
+    .wrap {
+      max-width: 640px;
+      margin: 0 auto;
+      padding: 1rem 1rem 2rem;
+    }
+    header {
+      text-align: center;
+      padding: 1rem 0 0.5rem;
+    }
+    header h1 {
+      margin: 0;
+      font-size: 1.75rem;
+      letter-spacing: -0.02em;
+    }
+    header .tag {
+      color: var(--muted);
+      font-size: 0.9rem;
+      margin-top: 0.25rem;
+    }
+    .track {
+      display: inline-block;
+      margin-top: 0.5rem;
+      font-size: 0.75rem;
+      padding: 0.2rem 0.6rem;
+      border-radius: 999px;
+      background: rgba(61, 158, 255, 0.15);
+      color: var(--accent);
+    }
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      align-items: center;
+      justify-content: space-between;
+      margin: 1rem 0;
+    }
+    .lang-toggle {
+      display: flex;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .lang-toggle button {
+      border: none;
+      background: var(--surface);
+      color: var(--muted);
+      padding: 0.65rem 1rem;
+      font-size: 1rem;
+      cursor: pointer;
+      min-width: 52px;
+    }
+    .lang-toggle button.active {
+      background: var(--accent);
+      color: #fff;
+      font-weight: 600;
+    }
+    label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      font-size: 1rem;
+    }
+    textarea {
+      width: 100%;
+      min-height: 140px;
+      padding: 0.85rem;
+      font-size: 1rem;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--text);
+      resize: vertical;
+    }
+    textarea:focus {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
+    .samples {
+      margin: 0.75rem 0 1rem;
+    }
+    .samples p {
+      margin: 0 0 0.5rem;
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+    .sample-btns {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    .sample-btns button {
+      text-align: left;
+      padding: 0.75rem 1rem;
+      font-size: 0.95rem;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--text);
+      cursor: pointer;
+      min-height: 48px;
+    }
+    .sample-btns button:active {
+      transform: scale(0.99);
+    }
+    .primary {
+      width: 100%;
+      padding: 1rem;
+      font-size: 1.1rem;
+      font-weight: 700;
+      border: none;
+      border-radius: 12px;
+      background: var(--accent);
+      color: #fff;
+      cursor: pointer;
+      min-height: 52px;
+      margin-top: 0.5rem;
+    }
+    .primary:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+    .result {
+      margin-top: 1.25rem;
+      padding: 1.25rem;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      display: none;
+    }
+    .result.visible { display: block; }
+    .risk-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 1.25rem;
+      font-weight: 800;
+      padding: 0.5rem 1rem;
+      border-radius: 10px;
+      margin-bottom: 0.75rem;
+    }
+    .risk-badge.low { background: rgba(34, 197, 94, 0.2); color: var(--low); }
+    .risk-badge.medium { background: rgba(245, 158, 11, 0.2); color: var(--med); }
+    .risk-badge.high { background: rgba(239, 68, 68, 0.25); color: var(--high); }
+    .confidence {
+      font-size: 0.9rem;
+      color: var(--muted);
+      margin-bottom: 1rem;
+    }
+    .result h3 {
+      margin: 1rem 0 0.5rem;
+      font-size: 1rem;
+    }
+    .flags ul, .steps ol {
+      margin: 0;
+      padding-left: 1.25rem;
+    }
+    .flags li {
+      margin-bottom: 0.65rem;
+    }
+    .flag-title { font-weight: 600; color: var(--text); }
+    .flag-explain { color: var(--muted); font-size: 0.9rem; }
+    .steps li { margin-bottom: 0.5rem; }
+    .listen-row {
+      margin-top: 1rem;
+    }
+    .listen-row button {
+      padding: 0.75rem 1.25rem;
+      font-size: 1rem;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--accent);
+      cursor: pointer;
+      min-height: 48px;
+    }
+    footer.guardrails {
+      margin-top: 2rem;
+      padding: 1rem;
+      border-radius: 10px;
+      background: rgba(239, 68, 68, 0.08);
+      border: 1px solid rgba(239, 68, 68, 0.25);
+      font-size: 0.85rem;
+      color: var(--muted);
+      text-align: center;
+    }
+    footer.guardrails strong { color: var(--text); display: block; margin-bottom: 0.35rem; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1 data-i18n="title">TipKavach</h1>
+      <p class="tag" data-i18n="subtitle">Check investment tips before you lose money</p>
+      <span class="track" data-i18n="track">Track A — Digital Fraud &amp; Scam Resilience</span>
+    </header>
+
+    <div class="toolbar">
+      <div class="lang-toggle" role="group" aria-label="Language">
+        <button type="button" id="langEn" class="active" aria-pressed="true">EN</button>
+        <button type="button" id="langHi" aria-pressed="false">हि</button>
+      </div>
+    </div>
+
+    <label for="msg" data-i18n="labelPaste">Paste message from WhatsApp / Telegram</label>
+    <textarea id="msg" data-i18n-placeholder="placeholderPaste" placeholder="Paste the tip or scam message here…"></textarea>
+
+    <div class="samples">
+      <p data-i18n="trySamples">Try a sample scam message:</p>
+      <div class="sample-btns">
+        <button type="button" data-sample="0" data-i18n="sample1Label">Telegram F&amp;O VIP group</button>
+        <button type="button" data-sample="1" data-i18n="sample2Label">Fake IPO allotment</button>
+        <button type="button" data-sample="2" data-i18n="sample3Label">Fake SEBI advisor + UPI</button>
+      </div>
+    </div>
+
+    <button type="button" class="primary" id="checkBtn" data-i18n="checkBtn">Check risk</button>
+
+    <section class="result" id="result" aria-live="polite">
+      <div id="riskBadge" class="risk-badge"></div>
+      <p class="confidence" id="confidence"></p>
+      <div class="flags">
+        <h3 data-i18n="flagsTitle">Warning signs found</h3>
+        <ul id="flagsList"></ul>
+      </div>
+      <div class="steps">
+        <h3 data-i18n="stepsTitle">Safe next steps</h3>
+        <ol id="stepsList"></ol>
+      </div>
+      <div class="listen-row">
+        <button type="button" id="listenBtn" data-i18n="listenBtn">Listen to result</button>
+      </div>
+    </section>
+
+    <footer class="guardrails">
+      <strong data-i18n="guardTitle">Investor protection only</strong>
+      <span data-i18n="guardBody">No stock tips. No buy/sell advice. Your message never leaves your phone — analysis runs on this device.</span>
+    </footer>
+  </div>
+
+  <script>
+    const SAMPLES = [
+      `🔥 VIP TELEGRAM GROUP 🔥\nGuaranteed 500% profit in Bank Nifty options!\nOnly 10 seats left TODAY.\nPay ₹4999 UPI to tipsking@paytm\nJoin before market open — 100% sure shot calls\nInstall AnyDesk for "account setup"`,
+      `Congratulations! You are selected for PRE-IPO allotment of XYZ Ltd.\nSend processing fee ₹25000 to agent@oksbi\nLimited time — allotment confirm by tonight\nForwarded many times\nContact: bit.ly/xyz-allot`,
+      `I am SEBI registered advisor INA99999999\nDouble your money in 30 days — assured returns pakka!\nShare OTP sent to your phone for KYC\nPay via QR code to personal UPI\nInsider operator call — don't miss`
+    ];
+
+    const I18N = {
+      en: {
+        title: "TipKavach",
+        subtitle: "Check investment tips before you lose money",
+        track: "Track A — Digital Fraud & Scam Resilience",
+        labelPaste: "Paste message from WhatsApp / Telegram",
+        placeholderPaste: "Paste the tip or scam message here…",
+        trySamples: "Try a sample scam message:",
+        sample1Label: "Telegram F&O VIP group",
+        sample2Label: "Fake IPO allotment",
+        sample3Label: "Fake SEBI advisor + UPI",
+        checkBtn: "Check risk",
+        flagsTitle: "Warning signs found",
+        stepsTitle: "Safe next steps",
+        listenBtn: "Listen to result",
+        guardTitle: "Investor protection only",
+        guardBody: "No stock tips. No buy/sell advice. Your message never leaves your phone — analysis runs on this device.",
+        riskLow: "Low risk",
+        riskMed: "Medium risk",
+        riskHigh: "High risk",
+        confidenceTpl: "Based on {n} warning sign(s). This is a pattern check, not a final legal verdict — stay cautious.",
+        noFlags: "No strong scam patterns detected, but always verify claims yourself.",
+        step1: "Do not pay money or share OTP/PIN with anyone from this message.",
+        step2: "Verify any SEBI registration number yourself at sebi.gov.in (Intermediaries search).",
+        step3: "Report fraud: call cyber helpline 1930 or file at cybercrime.gov.in.",
+        step4: "For market complaints, use SCORES at scores.sebi.gov.in.",
+        emptyMsg: "Please paste a message to check."
+      },
+      hi: {
+        title: "टिपकवच",
+        subtitle: "पैसा गँवाने से पहले निवेश टिप जाँचें",
+        track: "ट्रैक A — डिजिटल धोखाधड़ी व स्कैम सुरक्षा",
+        labelPaste: "WhatsApp / Telegram का संदेश यहाँ चिपकाएँ",
+        placeholderPaste: "टिप या स्कैम संदेश यहाँ पेस्ट करें…",
+        trySamples: "नमूना स्कैम संदेश आज़माएँ:",
+        sample1Label: "Telegram F&O VIP ग्रुप",
+        sample2Label: "नकली IPO आवंटन",
+        sample3Label: "नकली SEBI सलाहकार + UPI",
+        checkBtn: "जोखिम जाँचें",
+        flagsTitle: "मिले चेतावनी संकेत",
+        stepsTitle: "सुरक्षित अगले कदम",
+        listenBtn: "परिणाम सुनें",
+        guardTitle: "केवल निवेशक सुरक्षा",
+        guardBody: "कोई स्टॉक टिप नहीं। कोई खरीद/बेच सलाह नहीं। आपका संदेश फ़ोन से बाहर नहीं जाता — जाँच इसी डिवाइस पर होती है।",
+        riskLow: "कम जोखिम",
+        riskMed: "मध्यम जोखिम",
+        riskHigh: "उच्च जोखिम",
+        confidenceTpl: "{n} चेतावनी संकेत(m) के आधार पर। यह पैटर्न जाँच है, अंतिम फैसला नहीं — सावधान रहें।",
+        noFlags: "कोई मजबूत स्कैम पैटर्न नहीं मिला, फिर भी दावों की खुद पुष्टि करें।",
+        step1: "इस संदेश वाले को पैसा या OTP/PIN न दें।",
+        step2: "SEBI पंजीकरण संख्या khud sebi.gov.in पर जाँचें।",
+        step3: "1930 पर कॉल करें या cybercrime.gov.in पर शिकायत दर्ज करें।",
+        step4: "बाज़ार शिकायत के लिए scores.sebi.gov.in (SCORES) का उपयोग करें।",
+        emptyMsg: "जाँच के लिए संदेश पेस्ट करें।"
+      }
+    };
+
+    const RULES = [
+      {
+        id: "guaranteed",
+        weight: 15,
+        patterns: [/guaranteed|assured|100\s*%|sure\s*shot|pakka|double your money|500\s*%/i, /गारंटी|पक्का|निश्चित|दोगुना/i],
+        titleEn: "Guaranteed or unrealistic returns",
+        titleHi: "गारंटी या अवास्तविक मुनाफा",
+        explainEn: "Legitimate investing never promises fixed high returns.",
+        explainHi: "वास्तविक निवेश में निश्चित ऊँचा मुनाफा नहीं दिया जाता।"
+      },
+      {
+        id: "urgency",
+        weight: 10,
+        patterns: [/today only|limited seats|before market|tonight|last chance|hurry|only \d+ seat/i, /आज ही|सीमित|जल्दी|आखिरी/i],
+        titleEn: "Pressure and urgency",
+        titleHi: "दबाव और जल्दबाज़ी",
+        explainEn: "Scammers push you to act before you can think.",
+        explainHi: "धोखेबाज़ सोचने का समय नहीं देते।"
+      },
+      {
+        id: "upi",
+        weight: 18,
+        patterns: [/@paytm|@oksbi|@ybl|@axl|upi to|pay ₹|pay rs|qr code|personal upi/i, /UPI|भुगतान|QR/i],
+        titleEn: "Payment to personal UPI / QR",
+        titleHi: "निजी UPI / QR पर भुगतान",
+        explainEn: "Real firms use official payment channels, not random UPI IDs.",
+        explainHi: "वास्तविक कंपनियाँ random UPI ID नहीं मांगतीं।"
+      },
+      {
+        id: "remote",
+        weight: 20,
+        patterns: [/anydesk|teamviewer|remote access|screen share app|install.*desk/i],
+        titleEn: "Remote access app request",
+        titleHi: "रिमोट एक्सेस ऐप",
+        explainEn: "Never install remote-control apps for “trading setup”.",
+        explainHi: "“ट्रेडिंग सेटअप” के लिए remote ऐप न स्थापित करें।"
+      },
+      {
+        id: "vip",
+        weight: 12,
+        patterns: [/vip group|paid group|premium tips|join group ₹|telegram group/i, /VIP|पेड ग्रुप/i],
+        titleEn: "Paid VIP tip group",
+        titleHi: "पेड VIP टिप ग्रुप",
+        explainEn: "Paid tip channels often lead to losses, not protection.",
+        explainHi: "पेड टिप चैनल अक्सर नुकसान कराते हैं।"
+      },
+      {
+        id: "preipo",
+        weight: 16,
+        patterns: [/pre-ipo|pre ipo|allotment|processing fee|agent@|selected for.*ipo/i, /IPO|आवंटन|एजेंट/i],
+        titleEn: "Fake IPO / allotment offer",
+        titleHi: "नकली IPO / आवंटन",
+        explainEn: "Real IPOs do not ask for fees via random agents on chat.",
+        explainHi: "असली IPO chat पर एजेंट फीस नहीं मांगती।"
+      },
+      {
+        id: "sebi_bad",
+        weight: 14,
+        test: (text) => {
+          const m = text.match(/\b(IN[AHZ])\s*-?\s*(\d{5,12})\b/i);
+          if (!m) {
+            if (/sebi registered|sebi advisor|registered with sebi/i.test(text) || /SEBI पंजी|SEBI registered/i.test(text)) {
+              return { hit: true, snippet: "Claims SEBI registration without valid INA/INH/INZ number" };
+            }
+            return null;
+          }
+          const prefix = m[1].toUpperCase();
+          const num = m[2];
+          const validPrefix = ["INA", "INH", "INZ"].includes(prefix);
+          const validLen = num.length >= 5 && num.length <= 12;
+          if (!validPrefix || !validLen || m[0].includes("999999")) {
+            return { hit: true, snippet: m[0] };
+          }
+          return { hit: true, snippet: m[0] + " (format seen — verify on sebi.gov.in)" };
+        },
+        titleEn: "SEBI registration claim to verify",
+        titleHi: "SEBI पंजीकरण दावा — जाँच ज़रूरी",
+        explainEn: "Always verify INA/INH/INZ numbers on the official SEBI site.",
+        explainHi: "INA/INH/INZ नंबर official SEBI साइट पर जाँचें।"
+      },
+      {
+        id: "otp",
+        weight: 22,
+        patterns: [/share otp|send otp|otp sent|pin code|share pin/i, /OTP|पिन/i],
+        titleEn: "OTP / PIN request",
+        titleHi: "OTP / PIN माँग",
+        explainEn: "Never share OTPs — they can drain your bank account.",
+        explainHi: "OTP कभी न साझा करें — खाता खाली हो सकता है।"
+      },
+      {
+        id: "links",
+        weight: 8,
+        patterns: [/bit\.ly|tinyurl|t\.co|goo\.gl|http:\/\/[^\s]+(?!sebi\.gov)/i],
+        titleEn: "Short or suspicious link",
+        titleHi: "छोटा या संदिग्ध लिंक",
+        explainEn: "Short links hide fake login or payment pages.",
+        explainHi: "छोटे लिंक नकली साइट छिपाते हैं।"
+      },
+      {
+        id: "insider",
+        weight: 12,
+        patterns: [/insider|operator call|sure shot|tips king/i, /इनसाइडर|ऑपरेटर/i],
+        titleEn: "“Insider” or operator language",
+        titleHi: "“इनसाइडर” भाषा",
+        explainEn: "Markets do not offer legal guaranteed insider tips to strangers.",
+        explainHi: "अवैध insider टिप strangers को नहीं मिलती।"
+      },
+      {
+        id: "celebrity",
+        weight: 10,
+        patterns: [/finfluencer|celebrity|big bull|shark tank/i],
+        titleEn: "Celebrity / influencer bait",
+        titleHi: "सेलिब्रिटी / influencer लालच",
+        explainEn: "Scammers often fake endorsements.",
+        explainHi: "नकली endorsement common है।"
+      },
+      {
+        id: "forward",
+        weight: 6,
+        patterns: [/forwarded many times|forwarded \d+ times/i, /फॉरवर्ड/i],
+        titleEn: "Mass-forwarded message",
+        titleHi: "बड़े पैमाने पर forward",
+        explainEn: "Chain forwards spread scams quickly.",
+        explainHi: "chain forward से scam फैलते हैं।"
+      }
+    ];
+
+    let lang = "en";
+    let lastSpeakText = "";
+
+    function t(key, vars) {
+      let s = I18N[lang][key] || I18N.en[key] || key;
+      if (vars) Object.keys(vars).forEach((k) => { s = s.replace("{" + k + "}", vars[k]); });
+      return s;
+    }
+
+    function applyI18n() {
+      document.querySelectorAll("[data-i18n]").forEach((el) => {
+        const k = el.getAttribute("data-i18n");
+        if (I18N[lang][k]) el.textContent = I18N[lang][k];
+      });
+      const ta = document.getElementById("msg");
+      ta.placeholder = t("placeholderPaste");
+      document.documentElement.lang = lang === "hi" ? "hi" : "en";
+    }
+
+    function matchRule(rule, text) {
+      if (rule.test) {
+        const r = rule.test(text);
+        if (r && r.hit) return { rule, snippet: r.snippet || "" };
+        return null;
+      }
+      for (const p of rule.patterns) {
+        const m = text.match(p);
+        if (m) return { rule, snippet: m[0] };
+      }
+      return null;
+    }
+
+    function analyze(text) {
+      const hits = [];
+      let score = 0;
+      for (const rule of RULES) {
+        const m = matchRule(rule, text);
+        if (m) {
+          hits.push(m);
+          score += rule.weight;
+        }
+      }
+      let level = "low";
+      if (score >= 35) level = "high";
+      else if (score >= 18) level = "medium";
+      return { hits, score, level };
+    }
+
+    function renderResult(analysis) {
+      const { hits, level } = analysis;
+      const result = document.getElementById("result");
+      const badge = document.getElementById("riskBadge");
+      const conf = document.getElementById("confidence");
+      const flagsList = document.getElementById("flagsList");
+      const stepsList = document.getElementById("stepsList");
+
+      badge.className = "risk-badge " + level;
+      const riskLabel = level === "high" ? t("riskHigh") : level === "medium" ? t("riskMed") : t("riskLow");
+      badge.textContent = (level === "high" ? "⚠ " : level === "medium" ? "◆ " : "✓ ") + riskLabel;
+
+      const n = hits.length;
+      conf.textContent = n ? t("confidenceTpl", { n: String(n) }) : t("noFlags");
+
+      flagsList.innerHTML = "";
+      if (hits.length === 0) {
+        const li = document.createElement("li");
+        li.textContent = t("noFlags");
+        flagsList.appendChild(li);
+      } else {
+        hits.forEach(({ rule, snippet }) => {
+          const li = document.createElement("li");
+          const title = lang === "hi" ? rule.titleHi : rule.titleEn;
+          const explain = lang === "hi" ? rule.explainHi : rule.explainEn;
+          li.innerHTML = `<span class="flag-title">${title}</span>` +
+            (snippet ? ` <em>“${snippet.slice(0, 80)}”</em>` : "") +
+            `<div class="flag-explain">${explain}</div>`;
+          flagsList.appendChild(li);
+        });
+      }
+
+      stepsList.innerHTML = "";
+      ["step1", "step2", "step3", "step4"].forEach((k) => {
+        const li = document.createElement("li");
+        li.textContent = t(k);
+        stepsList.appendChild(li);
+      });
+
+      result.classList.add("visible");
+
+      lastSpeakText = riskLabel + ". " + conf.textContent + ". " +
+        Array.from(stepsList.querySelectorAll("li")).map((li) => li.textContent).join(" ");
+    }
+
+    function runCheck() {
+      const text = document.getElementById("msg").value.trim();
+      if (!text) {
+        alert(t("emptyMsg"));
+        return;
+      }
+      renderResult(analyze(text));
+    }
+
+    function speakResult() {
+      if (!lastSpeakText || !window.speechSynthesis) return;
+      window.speechSynthesis.cancel();
+      const u = new SpeechSynthesisUtterance(lastSpeakText);
+      u.lang = lang === "hi" ? "hi-IN" : "en-IN";
+      u.rate = 0.95;
+      window.speechSynthesis.speak(u);
+    }
+
+    document.getElementById("langEn").addEventListener("click", () => {
+      lang = "en";
+      document.getElementById("langEn").classList.add("active");
+      document.getElementById("langHi").classList.remove("active");
+      document.getElementById("langEn").setAttribute("aria-pressed", "true");
+      document.getElementById("langHi").setAttribute("aria-pressed", "false");
+      applyI18n();
+    });
+    document.getElementById("langHi").addEventListener("click", () => {
+      lang = "hi";
+      document.getElementById("langHi").classList.add("active");
+      document.getElementById("langEn").classList.remove("active");
+      document.getElementById("langHi").setAttribute("aria-pressed", "true");
+      document.getElementById("langEn").setAttribute("aria-pressed", "false");
+      applyI18n();
+    });
+
+    document.querySelectorAll("[data-sample]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const i = parseInt(btn.getAttribute("data-sample"), 10);
+        document.getElementById("msg").value = SAMPLES[i];
+        runCheck();
+      });
+    });
+
+    document.getElementById("checkBtn").addEventListener("click", runCheck);
+    document.getElementById("listenBtn").addEventListener("click", speakResult);
+    applyI18n();
+  </script>
+</body>
+</html>
