@@ -2,11 +2,9 @@
 
 On-device checker for WhatsApp and Telegram investment tips. Built for **SANGYAN Track A** (Digital Fraud & Scam Resilience): pattern-based risk scoring, Hindi/English UI, Listen (Web Speech), no stock tips, no data upload.
 
-## Live demo
+**Live demo:** [https://visshva-r.github.io/TipKavach/](https://visshva-r.github.io/TipKavach/)
 
-**https://visshva-r.github.io/TipKavach/**
-
-(After the first push with GitHub Actions, enable **Settings → Pages → Source: GitHub Actions** if the site is not live yet.)
+**Source:** [github.com/visshva-r/TipKavach](https://github.com/visshva-r/TipKavach)
 
 ## Run locally
 
