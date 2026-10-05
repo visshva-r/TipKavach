@@ -1,30 +1,31 @@
-# TipKavach — Track A (Digital Fraud & Scam Resilience)
+# TipKavach
 
-Single-file web app: open `index.html` in Chrome/Edge on phone or PC.
+On-device checker for WhatsApp and Telegram investment tips. Built for **SANGYAN Track A** (Digital Fraud & Scam Resilience): pattern-based risk scoring, Hindi/English UI, Listen (Web Speech), no stock tips, no data upload.
 
-## Live demo (fastest if `gh` is not logged in)
+## Live demo
 
-1. Go to [https://app.netlify.com/drop](https://app.netlify.com/drop)
-2. Drag this entire `Project` folder onto the page.
-3. Copy the `https://….netlify.app` URL for Unstop.
+**https://visshva-r.github.io/TipKavach/**
 
-## GitHub Pages (if logged in)
+(After the first push with GitHub Actions, enable **Settings → Pages → Source: GitHub Actions** if the site is not live yet.)
 
-```powershell
-cd Project
-gh auth login
-gh repo create tipkavach --public --source . --remote origin --push
-gh api repos/{owner}/tipkavach/pages -f build_type=legacy -f source[branch]=master -f source[path]=/
-```
+## Run locally
 
-Then open `https://<your-username>.github.io/tipkavach/`
-
-## Local demo for video
-
-Double-click `index.html` or:
+Open `index.html` in a browser, or:
 
 ```powershell
 npx --yes serve .
 ```
 
-Open the URL shown (e.g. `http://localhost:3000`).
+## How it works
+
+1. Paste a tip or tap a sample scam message.
+2. On-device rules score red flags (UPI to personal IDs, OTP asks, AnyDesk, fake IPO fees, etc.).
+3. See **Neutral / Medium / High** risk with uncertainty note and safe next steps (1930, cybercrime.gov.in, SCORES, SEBI verify).
+
+## Tech
+
+Single HTML/CSS/JS file. No backend, no npm build, no analytics.
+
+## License
+
+Public-good investor protection prototype. Submitted to Sangyan Hackathon 2026.

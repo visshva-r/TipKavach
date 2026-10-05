@@ -211,6 +211,11 @@
     .flag-title { font-weight: 600; color: var(--text); }
     .flag-explain { color: var(--muted); font-size: 0.9rem; }
     .steps li { margin-bottom: 0.5rem; }
+    .steps a {
+      color: var(--accent);
+      text-decoration: underline;
+      text-underline-offset: 2px;
+    }
     .listen-row {
       margin-top: 1rem;
     }
@@ -242,8 +247,7 @@
     <header>
       <h1 data-i18n="title">TipKavach</h1>
       <p class="tag" data-i18n="subtitle">Check investment tips before you lose money</p>
-      <span class="track" data-i18n="track">Track A — Digital Fraud &amp; Scam Resilience</span>
-      <p class="guard-strip" data-i18n="guardStrip">No tips · No buy/sell · Stays on your device</p>
+      <p class="guard-strip" data-i18n="guardStrip">No tips · No buy/sell · On your device · 0 bytes sent</p>
     </header>
 
     <div class="toolbar">
@@ -317,7 +321,7 @@
         listenBtn: "Listen to result",
         guardTitle: "Investor protection only",
         guardBody: "No stock tips. No buy/sell advice. Your message never leaves your phone — analysis runs on this device.",
-        guardStrip: "No tips · No buy/sell · Stays on your device",
+        guardStrip: "No tips · No buy/sell · On your device · 0 bytes sent",
         sample4Label: "Hindi tip (100% पक्का)",
         riskNeutral: "No known scam pattern",
         riskLow: "Low risk",
@@ -344,7 +348,7 @@
         sample2Label: "नकली IPO आवंटन",
         sample3Label: "नकली SEBI सलाहकार + UPI",
         sample4Label: "हिंदी टिप (100% पक्का)",
-        guardStrip: "कोई टिप नहीं · कोई खरीद/बेच नहीं · डेटा डिवाइस पर रहता है",
+        guardStrip: "कोई टिप नहीं · कोई खरीद/बेच नहीं · डिवाइस पर · 0 bytes भेजे गए",
         checkBtn: "जोखिम जाँचें",
         flagsTitle: "मिले चेतावनी संकेत",
         stepsTitle: "सुरक्षित अगले कदम",
@@ -493,7 +497,8 @@
         weight: 22,
         patterns: [
           /share\s+(the\s+)?otp|send\s+(the\s+)?otp|otp\s+sent|share\s+pin|share\s+the\s+pin|received.*otp|otp\s+you\s+received|otp\s+भेज/i,
-          /OTP\s+मत\s+share[^.\n]{0,40}OTP\s+भेज/i
+          /OTP\s+मत\s+share[^.\n]{0,40}OTP\s+भेज/i,
+          /\botp\s+(share|bhej|bhejo|karo|do)\b|\b(share|bhej|bhejo|send)\s+otp\b/i
         ],
         titleEn: "OTP / PIN request",
         titleHi: "OTP / PIN माँग",
@@ -503,12 +508,16 @@
       {
         id: "links",
         weight: 8,
-        patterns: [
-          /\bit\.ly\/\S+/i,
-          /\btinyurl\.com\/\S+/i,
-          /\bgoo\.gl\/\S+/i,
-          /(?:^|\s)https?:\/\/(?!([^\s/]*\.)?sebi\.gov)[^\s]+/i
-        ],
+        test: (text) => {
+          const allowHost = /(?:microsoft|google|github|wikipedia|mozilla)\.com|docs\./i;
+          const short = text.match(/\b(?:bit\.ly|tinyurl\.com|goo\.gl)\/\S+/i);
+          if (short) return { hit: true, snippet: short[0] };
+          const url = text.match(/(?:^|\s)(https?:\/\/[^\s]+)/i);
+          if (!url) return null;
+          const u = url[1];
+          if (/sebi\.gov/i.test(u) || allowHost.test(u)) return null;
+          return { hit: true, snippet: u.slice(0, 80) };
+        },
         titleEn: "Short or suspicious link",
         titleHi: "छोटा या संदिग्ध लिंक",
         explainEn: "Short links hide fake login or payment pages.",
@@ -562,14 +571,6 @@
       const ta = document.getElementById("msg");
       ta.placeholder = t("placeholderPaste");
       document.documentElement.lang = lang === "hi" ? "hi" : "en";
-    }
-
-    function escapeHtml(s) {
-      return String(s)
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;");
     }
 
     function matchRule(rule, text) {
@@ -643,6 +644,69 @@
       return voices.some((v) => v.lang && v.lang.toLowerCase().startsWith(want));
     }
 
+    function addLink(li, href, label, newTab) {
+      const a = document.createElement("a");
+      a.href = href;
+      a.textContent = label;
+      if (newTab) {
+        a.target = "_blank";
+        a.rel = "noopener noreferrer";
+      }
+      li.appendChild(a);
+    }
+
+    function renderSafeSteps(ol) {
+      const spoken = [];
+      const li1 = document.createElement("li");
+      li1.textContent = t("step1");
+      ol.appendChild(li1);
+      spoken.push(t("step1"));
+
+      const li2 = document.createElement("li");
+      if (lang === "hi") {
+        li2.appendChild(document.createTextNode("SEBI पंजीकरण ख़ुद "));
+        addLink(li2, "https://www.sebi.gov.in/", "sebi.gov.in", true);
+        li2.appendChild(document.createTextNode(" पर जाँचें।"));
+        spoken.push(t("step2"));
+      } else {
+        li2.appendChild(document.createTextNode("Verify SEBI registration at "));
+        addLink(li2, "https://www.sebi.gov.in/", "sebi.gov.in", true);
+        li2.appendChild(document.createTextNode(" (Intermediaries search)."));
+        spoken.push("Verify SEBI registration at sebi.gov.in.");
+      }
+      ol.appendChild(li2);
+
+      const li3 = document.createElement("li");
+      if (lang === "hi") {
+        li3.appendChild(document.createTextNode("1930 पर कॉल करें या "));
+        addLink(li3, "tel:1930", "1930", false);
+        li3.appendChild(document.createTextNode(" · "));
+        addLink(li3, "https://cybercrime.gov.in/", "cybercrime.gov.in", true);
+        spoken.push(t("step3"));
+      } else {
+        li3.appendChild(document.createTextNode("Report fraud: "));
+        addLink(li3, "tel:1930", "1930", false);
+        li3.appendChild(document.createTextNode(" or "));
+        addLink(li3, "https://cybercrime.gov.in/", "cybercrime.gov.in", true);
+        spoken.push("Report fraud: 1930 or cybercrime.gov.in.");
+      }
+      ol.appendChild(li3);
+
+      const li4 = document.createElement("li");
+      if (lang === "hi") {
+        li4.appendChild(document.createTextNode("बाज़ार शिकायत: "));
+        addLink(li4, "https://scores.sebi.gov.in/", "SCORES", true);
+        spoken.push(t("step4"));
+      } else {
+        li4.appendChild(document.createTextNode("Market complaints: "));
+        addLink(li4, "https://scores.sebi.gov.in/", "SCORES", true);
+        spoken.push("Market complaints: SCORES.");
+      }
+      ol.appendChild(li4);
+
+      return spoken;
+    }
+
     function renderResult(analysis) {
       lastAnalysis = analysis;
       const { hits, level } = analysis;
@@ -687,13 +751,7 @@
       }
 
       stepsList.innerHTML = "";
-      const stepKeys = ["step1", "step2", "step3", "step4"];
-      const stepTexts = stepKeys.map((k) => t(k));
-      stepTexts.forEach((text) => {
-        const li = document.createElement("li");
-        li.textContent = text;
-        stepsList.appendChild(li);
-      });
+      const stepTexts = renderSafeSteps(stepsList);
 
       result.classList.add("visible");
       document.getElementById("inlineError").classList.remove("visible");
